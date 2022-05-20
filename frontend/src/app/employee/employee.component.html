@@ -5,68 +5,78 @@
         </div>
 
         <div class="col ml-auto text-right">
-            <button type="button" class="btn btn-outline-success" (click)="open(content)">
+            <button type="button" style="float: right" (click)="openModal()" data-bs-toggle="modal"
+                data-bs-target="#exampleModalLong" class="btn btn-outline-success">
                 <i class="fa fa-plus"></i> Add Employee
-
             </button>
-
         </div>
 
     </div>
     <hr>
 
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-4" *ngFor="let item of employees">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Ishika Shrivastava</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Frontend Developer</h6>
-                    <span class="badge badge-success">Design</span>
+                    <h5 class="card-title">{{item.name}}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{item.designation}}</h6>
+                    <span class="badge bg-secondary">{{item.department}}</span>
                     <hr>
-                    <button type="button" class="btn btn-sm btn-outline-primary mr-2">Edit</button>
-                    <button type="button" class="btn btn-sm btn-outline-danger">Delete</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary mr-2" data-bs-toggle="modal"
+                        data-bs-target="#exampleModalLong" [ngStyle] ="{'margin-right': '10px'}" (click)="onEditEmployee(item)">Edit</button>
+                    <button type="button" (click)="deleteEmployee(item._id)" class="btn btn-sm btn-outline-danger">Delete</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<ng-template #content let-modal>
-    <div class="modal-content">
-        <div class="modal-header">
-            <h4 class="modal-title" id="modal-basic-title">Add Employee</h4>
-            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
-        </div>
-        <div class="modal-body">
+<div [class.show]="showModal" class="modal fade show" id="exampleModalLong" tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">{{editModal? 'Update' : 'Add'}} Employee</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" (click)="onCloseModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
             <form [formGroup]="empForm" (ngSubmit)="onEmpSubmit()">
-                <div class="mb-3">
-                    <div class="form-group">
-                        <label>Enter Name</label>
-                        <input type="text" class="form-control" formControlName="name">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Enter Name</label>
+                            <input type="text" placeholder="Ex. John Vanis" class="form-control" formControlName="name">
 
+                        </div>
                     </div>
-                </div>
-                <div class="mb-3">
-                    <div class="form-group">
-                        <label>Enter Designation</label>
-                        <input type="text" class="form-control" formControlName="designation">
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Enter Designation</label>
+                            <input type="text"  placeholder="Ex. Frontend Developer" class="form-control" formControlName="designation">
 
+                        </div>
                     </div>
+
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Enter Department</label>
+                            <select class="form-select" placeholder="Select Department" formControlName="department">
+                                <option value="Design">Design</option>
+                                <option value="Development">Development</option>
+                                <option value="Automation">Automation</option>
+                            </select>
+                        </div>
+                    </div>    
                 </div>
-                <div class="mb-3">
-                    <label>Enter Department</label>
-                    <select class="custom-select" formControlName="department">
-                        <option value="design">Design</option>
-                        <option value="development">Development</option>
-                        <option value="automation">Automation</option>
-                    </select>
+
+                <div class="modal-footer">
+                    <button type="button" (click)="onCloseModal()" class="btn btn-secondary"
+                        data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
                 </div>
             </form>
         </div>
-        <div class="modal-footer">
-            <button type="button" (click)="modal.close('Close click')" class="btn btn-secondary"
-                data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary" (click)="modal.close('Save click')">Submit</button>
-        </div>
     </div>
-</ng-template>
+</div>
