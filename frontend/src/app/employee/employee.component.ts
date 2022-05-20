@@ -10,94 +10,102 @@ import { EmployeeService } from '../appServices/employee.service';
 })
 export class EmployeeComponent implements OnInit {
 
-  closeResult = '';
   empForm!: FormGroup;
-  showModal: boolean=false;
-  editModal: boolean=false;
-  employees: Employee[]=
-    [
-
-  ];
+  showModal: boolean = false;
+  showDeleteDailog: boolean = false;
+  editModal: boolean = false;
+  employees: Employee[] = [];
+  idToBeDeleted: string = '';
 
   constructor(private fb: FormBuilder,
-    private empService: EmployeeService ) { }
+    private empService: EmployeeService) { }
 
   ngOnInit(): void {
     this.getEmployees();
     this.empForm = this.fb.group({
-      _id:[],
-      name:['', Validators.required] ,
-      designation:['', Validators.required],
-      department:['', Validators.required]
+      _id: [],
+      name: ['', Validators.required],
+      designation: ['', Validators.required],
+      department: ['', Validators.required]
     })
   }
-  openModal(){
+  openModal(): void {
     this.showModal = true;
   }
 
   //Update empoyee details
-  onEditEmployee(emp: Employee): void{
+  onEditEmployee(emp: Employee): void {
     this.showModal = true;
     this.editModal = true;
     this.empForm.patchValue(emp);
   }
 
-  //Delete employee
+  //Confirm Delete employee
   deleteEmployee(id: any): void {
-    this.empService.deleteEmployees(id).subscribe(
-      (res)=>{
+    this.showDeleteDailog = true;
+    this.idToBeDeleted = id;
+  }
+
+  //Delete employee
+
+  confirmDelete(): void {
+    this.empService.deleteEmployees(this.idToBeDeleted).subscribe(
+      (res) => {
         console.log(res);
+        this.idToBeDeleted = '';
         this.getEmployees();
       },
-      (err)=>{
+      (err) => {
         console.log(err);
       })
   }
 
-//Form submit
+  //Form submit
   onEmpSubmit(): void {
-    if(this.empForm.valid){
-
-      if(this.editModal){
+    if (this.empForm.valid) {
+      if (this.editModal) {
         this.empService.updateEmployee(this.empForm.value).subscribe(
-          (res) =>{
+          (res) => {
             console.log(res);
             this.getEmployees();
             this.empForm.reset();
           },
-          (err) =>{
+          (err) => {
             console.log(err);
           })
-      } else{
+      } else {
         console.log(this.empForm.value);
         this.empService.addEmployee(this.empForm.value).subscribe(
-          (res) =>{
+          (res) => {
             console.log(res);
             this.getEmployees();
           },
-          (err) =>{
+          (err) => {
             console.log(err);
           })
-        
-      }
 
+      }
+    } else {
+      if (this.empForm.hasValidator(this.empForm.value)) {
+        console.log("fv");
+      }
     }
   }
   getEmployees(): void {
     this.empService.getEmployeeList().subscribe(
-      (res: any) =>{
+      (res: any) => {
         console.log(res);
         this.employees = res;
       },
-      (err) =>{
+      (err) => {
         console.log(err);
       }
-      )
+    )
   }
 
-  onCloseModal(){
+  onCloseModal() {
     this.showModal = false;
-    this.editModal =false;
+    this.editModal = false;
     this.empForm.reset();
   }
 }

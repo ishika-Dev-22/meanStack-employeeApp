@@ -7,7 +7,7 @@
         <div class="col ml-auto text-right">
             <button type="button" style="float: right" (click)="openModal()" data-bs-toggle="modal"
                 data-bs-target="#exampleModalLong" class="btn btn-outline-success">
-                <i class="fa fa-plus"></i> Add Employee
+                 Add Employee
             </button>
         </div>
 
@@ -20,20 +20,29 @@
                 <div class="card-body">
                     <h5 class="card-title">{{item.name}}</h5>
                     <h6 class="card-subtitle mb-2 text-muted">{{item.designation}}</h6>
-                    <span class="badge bg-secondary">{{item.department}}</span>
+                    <span class="badge" [ngClass]="{
+                        'bg-success': item.department == 'Development',
+                        'bg-primary': item.department == 'Design',
+                        'bg-danger': item.department == 'Automation'
+                    }">
+                        {{item.department}}
+                    </span>
                     <hr>
                     <button type="button" class="btn btn-sm btn-outline-primary mr-2" data-bs-toggle="modal"
-                        data-bs-target="#exampleModalLong" [ngStyle] ="{'margin-right': '10px'}" (click)="onEditEmployee(item)">Edit</button>
-                    <button type="button" (click)="deleteEmployee(item._id)" class="btn btn-sm btn-outline-danger">Delete</button>
+                        data-bs-target="#exampleModalLong" [ngStyle]="{'margin-right': '10px'}"
+                        (click)="onEditEmployee(item)">Edit</button>
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal"
+                        (click)="deleteEmployee(item._id)" class="btn btn-sm btn-outline-danger">Delete</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div [class.show]="showModal" class="modal fade show" id="exampleModalLong" tabindex="-1" role="dialog"
-    aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<!-- Add/Update Modal -->
+<div [class.show]="showModal" class="modal fade show" data-bs-backdrop="static" data-bs-keyboard="false"
+    id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLongTitle">{{editModal? 'Update' : 'Add'}} Employee</h5>
@@ -48,14 +57,21 @@
                         <div class="form-group">
                             <label class="form-label">Enter Name</label>
                             <input type="text" placeholder="Ex. John Vanis" class="form-control" formControlName="name">
-
+                            <small *ngIf="!empForm.controls['name'].valid && (empForm.controls['name'].dirty
+                                ||empForm.controls['name'].touched)" class="text-danger">
+                                Name Required!
+                            </small>
                         </div>
                     </div>
                     <div class="mb-3">
                         <div class="form-group">
                             <label class="form-label">Enter Designation</label>
-                            <input type="text"  placeholder="Ex. Frontend Developer" class="form-control" formControlName="designation">
-
+                            <input type="text" placeholder="Ex. Frontend Developer" class="form-control"
+                                formControlName="designation">
+                            <small *ngIf="!empForm.controls['designation'].valid && (empForm.controls['designation'].dirty
+                            ||empForm.controls['designation'].touched)" class="text-danger">
+                                Designation Required!
+                            </small>
                         </div>
                     </div>
 
@@ -68,15 +84,36 @@
                                 <option value="Automation">Automation</option>
                             </select>
                         </div>
-                    </div>    
+                    </div>
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" (click)="onCloseModal()" class="btn btn-secondary"
                         data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+                    <button type="submit" [disabled]="!empForm.valid" data-bs-dismiss="modal" class="btn btn-primary">Submit</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div [class.show]="showDeleteDailog" data-bs-backdrop="static" data-bs-keyboard="false" class="modal fade show"
+    id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>Do you want to delete the employee data?</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                    (click)="confirmDelete()">Delete</button>
+            </div>
         </div>
     </div>
 </div>
